@@ -1,56 +1,45 @@
 package rrc.bit.picturethis;
 
-import android.support.v7.widget.RecyclerView;
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.util.List;
 
-public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>{
-    private List<Place> places;
+import org.w3c.dom.Text;
 
-    public class PlaceViewHolder extends RecyclerView.ViewHolder {
-        // a View is defined for each piece of data to be displayed in the row
-        private TextView title, description, user;
-        //private ImageView image;
+import java.util.ArrayList;
 
-        public PlaceViewHolder(View view) {
-            super(view);
-            // initialize Views from the place_row.xml layout file
-            this.title = view.findViewById(R.id.tvTitle);
-            this.description = view.findViewById(R.id.tvDescription);
-            this.user = view.findViewById(R.id.tvUser);
-            //this.image = view.findViewById(R.id.ivImage);
+public class PlaceAdapter extends ArrayAdapter<Place> {
+
+    public PlaceAdapter(Context context, ArrayList<Place> places) {
+        super(context, 0, places);
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
+        Place place = getItem(position);
+
+        if(convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.place_row, parent, false);
         }
-    }
 
-    // initializes list of FeedItems for use in this adapter
-    public PlaceAdapter(List<Place> places) {
-        this.places = places;
-    }
+        TextView tvTitle = convertView.findViewById(R.id.tvTitle);
+        TextView tvDescription = convertView.findViewById(R.id.tvDescription);
+        TextView tvUser = convertView.findViewById(R.id.tvUser);
+        //ImageView image = convertView.findViewById(R.id.ivImage);
 
-    @Override
-    public PlaceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // inflate the place_row and pass it to a new ViewHolder object
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.place_row, parent, false);
+        tvTitle.setText(place.getTitle());
+        tvDescription.setText(place.getDescription());
+        tvUser.setText(place.getUser());
 
-        return new PlaceViewHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(PlaceViewHolder holder, int position) {
-        Place place = places.get(position);
-        holder.title.setText(place.getTitle());
-        holder.description.setText(place.getDescription());
-        holder.user.setText(place.getUser());
-        //holder.image.setImageResource(item.getImage());
-    }
-
-    @Override
-    public int getItemCount() {
-        return places.size();
+        return convertView;
     }
 }

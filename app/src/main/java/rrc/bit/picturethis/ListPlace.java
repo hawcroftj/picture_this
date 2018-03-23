@@ -3,9 +3,9 @@ package rrc.bit.picturethis;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,10 +18,9 @@ import java.util.List;
 
 public class ListPlace extends AppCompatActivity {
 
-    private List<Place> places = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
+    private ArrayList<Place> places = new ArrayList<>();
     private PlaceAdapter adapter;
+    private ListView lvPlaces;
 
     private DatabaseReference databasePlaces;
 
@@ -37,15 +36,10 @@ public class ListPlace extends AppCompatActivity {
         databasePlaces = db.getReference("place");
 
         // initialize RecyclerView and set layout defaults
-        recyclerView = findViewById(R.id.rvListPlace);
+        lvPlaces = findViewById(R.id.lvPlaces);
 
-        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        adapter = new PlaceAdapter(places);
-        recyclerView.setAdapter(adapter);
+        adapter = new PlaceAdapter(this, places);
+        lvPlaces.setAdapter(adapter);
     }
 
     @Override
@@ -61,8 +55,8 @@ public class ListPlace extends AppCompatActivity {
                     places.add(place);
                 }
 
-                PlaceAdapter adapter = new PlaceAdapter(places);
-                recyclerView.setAdapter(adapter);
+                PlaceAdapter adapter = new PlaceAdapter(getApplicationContext(), places);
+                lvPlaces.setAdapter(adapter);
             }
 
             @Override

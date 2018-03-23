@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context="rrc.bit.picturethis.ListPlace">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvListPlace"
+    <ListView
+        android:id="@+id/lvPlaces"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
