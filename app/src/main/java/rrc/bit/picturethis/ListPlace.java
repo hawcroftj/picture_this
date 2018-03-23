@@ -1,10 +1,14 @@
 package rrc.bit.picturethis;
 
+import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -35,11 +39,20 @@ public class ListPlace extends AppCompatActivity {
         // get "place" from database
         databasePlaces = db.getReference("place");
 
-        // initialize RecyclerView and set layout defaults
         lvPlaces = findViewById(R.id.lvPlaces);
 
         adapter = new PlaceAdapter(this, places);
         lvPlaces.setAdapter(adapter);
+
+        lvPlaces.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Place place = (Place)parent.getItemAtPosition(position);
+                Intent showPlace = new Intent(parent.getContext(), ShowPlace.class);
+                showPlace.putExtra("place", place);
+                startActivity(showPlace);
+            }
+        });
     }
 
     @Override

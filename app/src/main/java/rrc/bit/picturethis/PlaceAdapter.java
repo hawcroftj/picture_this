@@ -9,15 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class PlaceAdapter extends ArrayAdapter<Place> {
 
+    private ArrayList<Place> places;
+
     public PlaceAdapter(Context context, ArrayList<Place> places) {
         super(context, 0, places);
+        this.places = places;
     }
 
     @NonNull
@@ -41,5 +41,11 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
         tvUser.setText(place.getUser());
 
         return convertView;
+    }
+
+    @Nullable
+    @Override
+    public Place getItem(int position) {
+        return places.get(position);
     }
 }
