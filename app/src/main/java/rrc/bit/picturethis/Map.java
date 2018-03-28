@@ -96,10 +96,6 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
      * Validate data string returned from selected LatLng location.
      */
     private String validateAddressData(String data) {
-        try{
-            return (data == null || data.isEmpty()) ? "--Unavailable TRY--" : data;
-        } catch(IndexOutOfBoundsException e) {
-            return "--Unavailable CATCH--";
-        }
+        return (data == null || data.isEmpty()) ? "Unavailable" : data;
     }
 }
