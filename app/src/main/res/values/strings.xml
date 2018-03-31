@@ -2,8 +2,8 @@
     <string name="app_name">PictureThis</string>
     <string name="title_activity_map">Map</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="dialog_new_place">New Place</string>
-    <string name="from_address">Search Address</string>
-    <string name="from_map">Search Map</string>
+    <string name="from_address">Address</string>
+    <string name="from_map">Map</string>
+    <string name="cancel">Cancel</string>
 </resources>

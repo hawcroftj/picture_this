@@ -41,7 +41,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
 
     EditText etTitle, etDescription;
     ImageView ivPreview;
-    Button btnCamera, btnSubmit;
+    Button btnCamera, btnSubmit, btnFindPlace;
 
     private DatabaseReference databasePlaces;
     private DatabaseReference databaseUsers;
@@ -51,6 +51,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
     private GoogleSignInAccount account;
 
     static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_FIND_PLACE = 2;
     private String photoPath;
 
     @Override
@@ -71,9 +72,11 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         etDescription = findViewById(R.id.etDescription);
         ivPreview = findViewById(R.id.ivPreview);
         btnCamera = findViewById(R.id.btnCamera);
+        btnFindPlace = findViewById(R.id.btnFindPlace);
         btnSubmit = findViewById(R.id.btnSubmit);
 
         btnSubmit.setOnClickListener(this);
+        btnFindPlace.setOnClickListener(this);
         btnCamera.setOnClickListener(this);
 
         Intent intent = getIntent();
@@ -81,16 +84,14 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
-    @Override
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.btnCamera:
                 takePicture();
+                break;
+            case R.id.btnFindPlace:
+                Intent intent = new Intent(this, Map.class);
+                startActivityForResult(intent, REQUEST_FIND_PLACE);
                 break;
             case R.id.btnSubmit:
                 addPlace(databasePlaces);
@@ -101,8 +102,15 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // show a thumbnail of the image for review before submission
-        displayThumbnail();
+        if(resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_TAKE_PHOTO) {
+                // show a thumbnail of the image for review before submission
+                displayThumbnail();
+            }
+            if (requestCode == REQUEST_FIND_PLACE) {
+                
+            }
+        }
     }
 
     private void takePicture() {

@@ -1,5 +1,7 @@
 package rrc.bit.picturethis;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.v4.app.FragmentActivity;
@@ -18,6 +20,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Hashtable;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
 
@@ -37,15 +40,6 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         geocoder = new Geocoder(Map.this, Locale.getDefault());
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -58,38 +52,41 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                List<Address> addresses = new ArrayList<>();
-                Address address = null;
+                List<Address> places = new ArrayList<>();
+                Address place = null;
 
                 try{ // try to find an address from the selected location
-                    addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude,1);
+                    places = geocoder.getFromLocation(latLng.latitude, latLng.longitude,1);
                 } catch(IOException e){ e.printStackTrace(); }
 
                 try { // if nothing was found, display error message to user
-                    address = addresses.get(0);
+                    place = places.get(0);
                 } catch(IndexOutOfBoundsException e) {
                     Toast.makeText(Map.this, "No data for selected location.", Toast.LENGTH_SHORT).show();
                 }
 
-                if(address != null) {
-                    String addressString = getAddressDetails(address);
-                    Toast.makeText(Map.this, addressString, Toast.LENGTH_SHORT).show();
+                if(place != null) {
+                    Hashtable placeInfo = getAddressDetails(place);
+                    Intent returnPlace = new Intent();
+                    returnPlace.putExtra("place", placeInfo);
+                    setResult(Activity.RESULT_OK, returnPlace);
+                    finish();
                 }
             }
         });
 
     }
 
-    private String getAddressDetails(Address address) {
-        StringBuilder builder = new StringBuilder();
+    private Hashtable getAddressDetails(Address place) {
+        Hashtable<String, String> placeInfo = new Hashtable<>();
 
-        builder.append(validateAddressData(address.getFeatureName()));
-        builder.append(validateAddressData(address.getThoroughfare()));
-        builder.append(validateAddressData(address.getLocality()));
-        builder.append(validateAddressData(address.getAdminArea()));
-        builder.append(validateAddressData(address.getCountryCode()));
+        placeInfo.put("streetNum", validateAddressData(place.getFeatureName()));
+        placeInfo.put("street", validateAddressData(place.getThoroughfare()));
+        placeInfo.put("city", validateAddressData(place.getLocality()));
+        placeInfo.put("province", validateAddressData(place.getAdminArea()));
+        placeInfo.put("country", validateAddressData(place.getCountryCode()));
 
-        return builder.toString();
+        return placeInfo;
     }
 
     /*
