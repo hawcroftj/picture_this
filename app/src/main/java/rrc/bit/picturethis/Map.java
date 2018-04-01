@@ -16,11 +16,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Hashtable;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
 
@@ -66,9 +66,9 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
                 }
 
                 if(place != null) {
-                    Hashtable placeInfo = getAddressDetails(place);
+                    ArrayList<String> placeInfo = getAddressDetails(place);
                     Intent returnPlace = new Intent();
-                    returnPlace.putExtra("place", placeInfo);
+                    returnPlace.putStringArrayListExtra("place", placeInfo);
                     setResult(Activity.RESULT_OK, returnPlace);
                     finish();
                 }
@@ -77,14 +77,16 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
-    private Hashtable getAddressDetails(Address place) {
-        Hashtable<String, String> placeInfo = new Hashtable<>();
+    private ArrayList<String> getAddressDetails(Address place) {
+        ArrayList<String> placeInfo = new ArrayList<>();
 
-        placeInfo.put("streetNum", validateAddressData(place.getFeatureName()));
-        placeInfo.put("street", validateAddressData(place.getThoroughfare()));
-        placeInfo.put("city", validateAddressData(place.getLocality()));
-        placeInfo.put("province", validateAddressData(place.getAdminArea()));
-        placeInfo.put("country", validateAddressData(place.getCountryCode()));
+        placeInfo.add(validateAddressData(place.getFeatureName()));     // FeatureName  | Street Num
+        placeInfo.add(validateAddressData(place.getThoroughfare()));    // Thoroughfare | Street Name
+        placeInfo.add(validateAddressData(place.getLocality()));        // Locality     | City
+        placeInfo.add(validateAddressData(place.getAdminArea()));       // AdminArea    | Province / State
+        placeInfo.add(validateAddressData(place.getCountryCode()));     // CountryCode  | Country Code
+        placeInfo.add(String.valueOf(place.getLatitude()));             // Latitude     | Lat Value
+        placeInfo.add(String.valueOf(place.getLongitude()));            // Longitude    | Long Value
 
         return placeInfo;
     }
