@@ -70,7 +70,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
                 startActivity(new Intent(this, ListPlace.class));
                 break;
             case R.id.btnNewPlace:
-                startActivity(new Intent(this, NewPlace.class));
+                Intent intent = new Intent(this, NewPlace.class);
+                intent.putExtra("account", account);
+                startActivity(intent);
                 break;
             case R.id.btnSignIn:
                 signIn();

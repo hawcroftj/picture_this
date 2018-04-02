@@ -259,7 +259,10 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         final String NEW_PLACE_ID = databasePlaces.push().getKey();
 
         // create new place using information from activity
-        Place newPlace = new Place(NEW_PLACE_ID, title, description, account.getDisplayName());
+        // PLACE:           placeId, title, user, thumb, latitude, longitude
+        // PLACEDETAILS:    description, streetNum, street, city, province, country
+        PlaceDetails newPlaceDetails = new PlaceDetails(description, streetNum, streetName, city, province, country);
+        Place newPlace = new Place(NEW_PLACE_ID, title, account.getDisplayName(), newPlacePhotoName, latitude, longitude, newPlaceDetails);
 
         // add new place to database
         databasePlaces.child(NEW_PLACE_ID).setValue(newPlace);

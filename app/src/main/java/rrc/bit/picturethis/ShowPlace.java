@@ -20,7 +20,7 @@ public class ShowPlace extends AppCompatActivity {
         place = getIntent().getExtras().getParcelable("place");
 
         tvTitle.setText(place.getTitle());
-        tvDescription.setText(place.getDescription());
+        tvDescription.setText(place.getDetails().getDescription());
         tvUser.setText(place.getUser());
     }
 }

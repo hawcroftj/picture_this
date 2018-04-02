@@ -37,7 +37,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
         //ImageView image = convertView.findViewById(R.id.ivImage);
 
         tvTitle.setText(place.getTitle());
-        tvDescription.setText(place.getDescription());
+        tvDescription.setText(place.getDetails().getDescription());
         tvUser.setText(place.getUser());
 
         return convertView;
