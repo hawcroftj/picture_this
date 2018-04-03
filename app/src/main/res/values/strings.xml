@@ -6,4 +6,6 @@
     <string name="from_address">Address</string>
     <string name="from_map">Map</string>
     <string name="cancel">Cancel</string>
+
+    <string name="approx_address">Approximate Address:</string>
 </resources>

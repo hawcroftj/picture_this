@@ -53,7 +53,7 @@
             android:parentActivityName=".Main" />
         <activity
             android:name=".ShowPlace"
-            android:parentActivityName=".Main" />
+            android:parentActivityName=".ListPlace" />
         <activity
             android:name=".NewPlace"
             android:parentActivityName=".Main" />
