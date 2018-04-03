@@ -8,4 +8,17 @@
     <string name="cancel">Cancel</string>
 
     <string name="approx_address">Approximate Address:</string>
+
+    <!-- Preferences -->
+    <string name="settings_storage">Storage Settings</string>
+    <string name="settings_download">Image Download Settings</string>
+
+    <string name="set_save_images">Save Images to Device</string>
+    <string name="set_save_images_summary">Enable this setting to save photos taken in the app to your device.</string>
+
+    <string name="set_image_directory">Default Image Directory</string>
+    <string name="set_image_directory_summary">Change where PictureThis stores photos taken in the app. Default: device gallery.</string>
+
+    <string name="set_num_photos">Default Number of Photos</string>
+    <string name="set_num_photos_summary">Choose how many photos will load at once when viewing a Place page.</string>
 </resources>

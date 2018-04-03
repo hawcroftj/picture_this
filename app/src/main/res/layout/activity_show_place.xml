@@ -82,6 +82,20 @@
                 android:text="Month 01, YYYY" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnAddPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Photo"/>
+
+        <ImageView
+            android:id="@+id/ivNewImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
+            android:scaleType="fitXY" />
+
     </LinearLayout>
 
 </ScrollView>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/settings_storage"
+        android:key="settings_storage">
+
+        <CheckBoxPreference
+            android:key="set_save_images"
+            android:summary="@string/set_save_images_summary"
+            android:title="@string/set_save_images"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/settings_download"
+        android:key="settings_download">
+
+        <ListPreference
+            android:key="set_num_photos"
+            android:summary="@string/set_num_photos_summary"
+            android:title="@string/set_num_photos"
+            android:entries="@array/num_photos"
+            android:entryValues="@array/num_photos_values"
+            android:defaultValue="-1"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>

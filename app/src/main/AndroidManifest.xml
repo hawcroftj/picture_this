@@ -60,6 +60,9 @@
         <activity
             android:name=".ListPlace"
             android:parentActivityName=".Main"/>
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".Main" />
     </application>
 
 </manifest>

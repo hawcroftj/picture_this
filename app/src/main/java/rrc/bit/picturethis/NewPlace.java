@@ -3,10 +3,13 @@ package rrc.bit.picturethis;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
@@ -42,6 +45,8 @@ import java.util.UUID;
 
 public class NewPlace extends AppCompatActivity implements View.OnClickListener{
 
+    private SharedPreferences prefs;
+
     private TextView tvPlaceInfo;
     private EditText etTitle, etDescription;
     private ImageView ivPreview;
@@ -65,6 +70,10 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_place);
+
+        // initialize preferences
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         FirebaseApp.initializeApp(this);
         FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -265,6 +274,8 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
 
         // add new place to database
         databasePlaces.child(NEW_PLACE_ID).setValue(newPlace);
+        DatabaseReference imageRef = databasePlaces.child(NEW_PLACE_ID).child("images").push();
+        imageRef.setValue(newPlacePhotoName);
 
         Toast.makeText(this, "Place created.", Toast.LENGTH_SHORT).show();
     }

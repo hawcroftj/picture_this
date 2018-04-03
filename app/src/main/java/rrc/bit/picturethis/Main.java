@@ -3,6 +3,7 @@ package rrc.bit.picturethis;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,16 +39,21 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // initialize preferences
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         // GoogleSignInClient using options from googleSignInOptions
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 
         Button btnMap = findViewById(R.id.btnMap);
         Button btnListPlace = findViewById(R.id.btnListPlace);
         Button btnNewPlace = findViewById(R.id.btnNewPlace);
+        Button btnSettings = findViewById(R.id.btnSettings);
         SignInButton btnSignIn = findViewById(R.id.btnSignIn);
         btnMap.setOnClickListener(this);
         btnListPlace.setOnClickListener(this);
         btnNewPlace.setOnClickListener(this);
+        btnSettings.setOnClickListener(this);
         btnSignIn.setOnClickListener(this);
     }
 
@@ -73,6 +79,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
                 Intent intent = new Intent(this, NewPlace.class);
                 intent.putExtra("account", account);
                 startActivity(intent);
+                break;
+            case R.id.btnSettings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.btnSignIn:
                 signIn();
