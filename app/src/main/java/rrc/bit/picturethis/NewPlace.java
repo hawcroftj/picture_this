@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -120,7 +121,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         if(resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_TAKE_PHOTO) {
                 // show a thumbnail of the image for review before submission
-                displayThumbnail();
+                ivPreview.setImageBitmap(Utility.displayThumbnail(ivPreview, photoPath));
             }
             if (requestCode == REQUEST_FIND_PLACE) {
                 newPlaceInfo = data.getStringArrayListExtra("place");
@@ -145,7 +146,10 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
             try {
-                photoFile = createImageFile();
+                // create photo file and store path, name
+                photoFile = Utility.createImageFile(getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+                photoPath = Utility.createPhotoPath(photoFile);
+                newPlacePhotoName = Utility.createPhotoName(photoPath, photoFile.getName());
             } catch (IOException e) { }
             // if the File was created successfully
             if (photoFile != null) {
@@ -156,69 +160,9 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
-    private File createImageFile() throws IOException {
-        // create the image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName,".jpg", storageDir);
-
-        photoPath = image.getAbsolutePath();
-
-        // isolate the new image file name for association in new Place db entry
-        newPlacePhotoName = photoPath.substring(photoPath.indexOf(imageFileName), photoPath.length());
-
-        return image;
-    }
-
-    private void displayThumbnail() {
-        // get dimensions of the ImageView
-        int targetW = ivPreview.getWidth();
-        int targetH = ivPreview.getHeight();
-
-        // get the dimensions of the image taken
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(photoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // calculate a scale factor
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // decode the image to a bitmap size that fits in the ImageView
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, bmOptions);
-        ivPreview.setImageBitmap(bitmap);
-    }
-
-    private void uploadPicture() {
-        Uri file = Uri.fromFile(new File(photoPath));
-        StorageReference ref = storageReference.child("images/"+file.getLastPathSegment());
-        ref.putFile(file).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(NewPlace.this, "progress: " + taskSnapshot.getBytesTransferred(), Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener() {
-            @Override
-            public void onSuccess(Object o) {
-                Toast.makeText(NewPlace.this, "Upload successful.", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(NewPlace.this, "Upload failed."+e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     private void addPlace() {
         // upload place photo first
-        uploadPicture();
+        Utility.uploadPicture(storageReference, photoPath, getApplicationContext());
 
         //region Firebase json Structure - Visual Representation
 //        FIREBASE STRUCTURE

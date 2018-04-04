@@ -97,7 +97,7 @@ public class ShowPlace extends AppCompatActivity {
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                 } catch(IOException e){}
-                //use the bitmap as you like
+                // set image preview
                 ivNewImage.setImageBitmap(bitmap);
             }
         }
