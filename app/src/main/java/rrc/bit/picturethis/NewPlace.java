@@ -1,17 +1,12 @@
 package rrc.bit.picturethis;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,36 +17,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.util.Util;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.UUID;
+
+import static rrc.bit.picturethis.Main.REQUEST_FIND_PLACE;
+import static rrc.bit.picturethis.Main.REQUEST_TAKE_PHOTO;
 
 public class NewPlace extends AppCompatActivity implements View.OnClickListener{
-
     private SharedPreferences prefs;
+    private GoogleSignInAccount account;
 
     private TextView tvPlaceInfo;
     private EditText etTitle, etDescription;
     private ImageView ivPreview;
-    private Button btnCamera, btnSubmit, btnFindPlace;
 
     // [FeatureName, Thoroughfare, Locality, AdminArea, CountryCode, Lat, Long]
     private ArrayList<String> newPlaceInfo;
@@ -60,10 +46,6 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
 
-    private GoogleSignInAccount account;
-
-    static final int REQUEST_TAKE_PHOTO = 1;
-    static final int REQUEST_FIND_PLACE = 2;
     private String photoPath;
     private String newPlacePhotoName;
 
@@ -76,7 +58,6 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        FirebaseApp.initializeApp(this);
         FirebaseDatabase db = FirebaseDatabase.getInstance();
 
         // get "place" and "images" from database
@@ -88,14 +69,16 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         ivPreview = findViewById(R.id.ivPreview);
-        btnCamera = findViewById(R.id.btnCamera);
-        btnFindPlace = findViewById(R.id.btnFindPlace);
-        btnSubmit = findViewById(R.id.btnSubmit);
+
+        Button btnCamera = findViewById(R.id.btnCamera);
+        Button btnFindPlace = findViewById(R.id.btnFindPlace);
+        Button btnSubmit = findViewById(R.id.btnSubmit);
 
         btnSubmit.setOnClickListener(this);
         btnFindPlace.setOnClickListener(this);
         btnCamera.setOnClickListener(this);
 
+        // get the user account
         Intent intent = getIntent();
         account = intent.getParcelableExtra("account");
     }
@@ -104,7 +87,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.btnCamera:
-                takePicture();
+                takePhoto();
                 break;
             case R.id.btnFindPlace:
                 Intent intent = new Intent(this, Map.class);
@@ -121,7 +104,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         if(resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_TAKE_PHOTO) {
                 // show a thumbnail of the image for review before submission
-                ivPreview.setImageBitmap(Utility.displayThumbnail(ivPreview, photoPath));
+                ivPreview.setImageBitmap(Utility.createBitmapThumbnail(ivPreview, photoPath));
             }
             if (requestCode == REQUEST_FIND_PLACE) {
                 newPlaceInfo = data.getStringArrayListExtra("place");
@@ -140,7 +123,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
-    private void takePicture() {
+    private void takePhoto() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // ensure the app can handle a camera request
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -162,7 +145,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
 
     private void addPlace() {
         // upload place photo first
-        Utility.uploadPicture(storageReference, photoPath, getApplicationContext());
+        Utility.commitPhotoToStorage(storageReference, photoPath, getApplicationContext());
 
         //region Firebase json Structure - Visual Representation
 //        FIREBASE STRUCTURE

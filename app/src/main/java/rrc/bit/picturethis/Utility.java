@@ -27,7 +27,7 @@ import java.util.Date;
 public final class Utility {
     private Utility() { }
 
-    public static Bitmap displayThumbnail(ImageView imageView, String photoPath) {
+    public static Bitmap createBitmapThumbnail(ImageView imageView, String photoPath) {
         // get dimensions of the ImageView
         int targetW = imageView.getWidth();
         int targetH = imageView.getHeight();
@@ -55,27 +55,37 @@ public final class Utility {
         // create the image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File image = File.createTempFile(imageFileName,".jpg", storageDir);
 
-        //String photoPath = createPhotoPath(image);
-
-        // isolate the new image file name for association in new Place db entry
-        //String newPlacePhotoName = createPhotoName(photoPath, imageFileName);
-
-        return image;
+        // if the images comes from the camera, save it in the gallery
+        // if the image is chosen from the gallery, save it to a temporary location for upload
+        return (storageDir != null) ?
+                File.createTempFile(imageFileName,".jpg", storageDir) :
+                File.createTempFile(imageFileName,".jpg");
     }
 
-    public static String createPhotoPath(File image) {
-        return image.getAbsolutePath();
+    public static File createImageFile() throws  IOException {
+        return createImageFile(null);
     }
+
+    public static String createPhotoPath(File image) { return image.getAbsolutePath(); }
 
     public static String createPhotoName(String photoPath, String imageFileName) {
         return photoPath.substring(photoPath.indexOf(imageFileName), photoPath.length());
     }
 
-    public static void uploadPicture(StorageReference storageReference, String photoPath, final Context context) {
-        Uri file = Uri.fromFile(new File(photoPath));
-        StorageReference ref = storageReference.child("images/"+file.getLastPathSegment());
+    public static void commitPhotoToStorage(StorageReference storageReference, String photoPath, Uri bitmap, final Context context) {
+        Uri file;
+        StorageReference ref;
+
+        if(bitmap == null) { // if a photo was taken with camera and saved to the gallery
+            file = Uri.fromFile(new File(photoPath));         // get photo from its location
+            ref = storageReference.child("images/" + file.getLastPathSegment());
+        } else {            // if a photo was chosen from a storage location
+            file = bitmap;                                    // ignore temp file path, use image from device storage
+            Uri filePath = Uri.fromFile(new File(photoPath)); // get file name, ignore file at this location
+            ref = storageReference.child("images/" + filePath.getLastPathSegment());
+        }
+
         ref.putFile(file).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
@@ -89,8 +99,12 @@ public final class Utility {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(context, "Upload failed."+e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Upload failed." + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static void commitPhotoToStorage(StorageReference storageReference, String photoPath, final Context context) {
+        commitPhotoToStorage(storageReference, photoPath, null, context);
     }
 }

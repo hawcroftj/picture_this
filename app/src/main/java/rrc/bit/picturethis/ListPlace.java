@@ -1,6 +1,7 @@
 package rrc.bit.picturethis;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -17,6 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class ListPlace extends AppCompatActivity {
+    private SharedPreferences prefs;
+    private GoogleSignInAccount account;
 
     private ArrayList<Place> places = new ArrayList<>();
     private PlaceAdapter adapter;
@@ -31,6 +35,7 @@ public class ListPlace extends AppCompatActivity {
 
         // initialize preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         places = new ArrayList<>();
 
@@ -49,9 +54,14 @@ public class ListPlace extends AppCompatActivity {
                 Place place = (Place)parent.getItemAtPosition(position);
                 Intent showPlace = new Intent(parent.getContext(), ShowPlace.class);
                 showPlace.putExtra("place", place);
+                showPlace.putExtra("account", account);
                 startActivity(showPlace);
             }
         });
+
+        // get the user account
+        Intent intent = getIntent();
+        account = intent.getParcelableExtra("account");
     }
 
     @Override

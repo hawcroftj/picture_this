@@ -3,6 +3,7 @@ package rrc.bit.picturethis;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,12 +21,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 
 public class Main extends AppCompatActivity implements View.OnClickListener{
+    private SharedPreferences prefs;
+    private GoogleSignInAccount account;
 
-    GoogleSignInAccount account;
-
-    private final String TAG = "PT_log";
+    // define app level constants
+    static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_FIND_PLACE = 2;
+    static final int REQUEST_PICK_IMAGE = 3;
+    static final String TAG = "PT_log";
 
     // Google sign in variables
     private final int RC_SIGN_IN = 1;
@@ -39,8 +45,12 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // initialize app for Firebase
+        FirebaseApp.initializeApp(this);
+
         // initialize preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // GoogleSignInClient using options from googleSignInOptions
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
@@ -50,6 +60,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
         Button btnNewPlace = findViewById(R.id.btnNewPlace);
         Button btnSettings = findViewById(R.id.btnSettings);
         SignInButton btnSignIn = findViewById(R.id.btnSignIn);
+
         btnMap.setOnClickListener(this);
         btnListPlace.setOnClickListener(this);
         btnNewPlace.setOnClickListener(this);
@@ -73,12 +84,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
                 startActivity(new Intent(this, Map.class));
                 break;
             case R.id.btnListPlace:
-                startActivity(new Intent(this, ListPlace.class));
+                Intent iListPlace = new Intent(this, ListPlace.class);
+                iListPlace.putExtra("account", account);
+                startActivity(iListPlace);
                 break;
             case R.id.btnNewPlace:
-                Intent intent = new Intent(this, NewPlace.class);
-                intent.putExtra("account", account);
-                startActivity(intent);
+                Intent iNewPlace = new Intent(this, NewPlace.class);
+                iNewPlace.putExtra("account", account);
+                startActivity(iNewPlace);
                 break;
             case R.id.btnSettings:
                 startActivity(new Intent(this, SettingsActivity.class));
