@@ -13,7 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,13 +23,18 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.util.Util;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 
 import static rrc.bit.picturethis.Main.REQUEST_PICK_IMAGE;
 import static rrc.bit.picturethis.Main.REQUEST_TAKE_PHOTO;
@@ -39,6 +46,8 @@ public class ShowPlace extends AppCompatActivity implements View.OnClickListener
     private Place place;
     private ImageView ivPlaceImage, ivNewImage;
     private TextView tvTitle, tvDescription, tvUser, tvAddress, tvLatLong, tvCreated;
+    private ArrayList<Image> images;
+    private GridView gvImages;
 
     private DatabaseReference databasePlaces;
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
@@ -59,6 +68,7 @@ public class ShowPlace extends AppCompatActivity implements View.OnClickListener
 
         ivPlaceImage = findViewById(R.id.ivPlaceImage);
         ivNewImage = findViewById(R.id.ivNewImage);
+        gvImages = findViewById(R.id.gvImages);
 
         tvTitle = findViewById(R.id.tvTitle);
         tvDescription = findViewById(R.id.tvDescription);
@@ -66,6 +76,9 @@ public class ShowPlace extends AppCompatActivity implements View.OnClickListener
         tvLatLong = findViewById(R.id.tvLatLong);
         tvUser = findViewById(R.id.tvUser);
         tvCreated = findViewById(R.id.tvCreated);
+
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        databasePlaces = db.getReference("place");
 
         Button btnUploadPhoto = findViewById(R.id.btnUploadPhoto);
         Button btnTakePhoto = findViewById(R.id.btnTakePhoto);
@@ -79,6 +92,12 @@ public class ShowPlace extends AppCompatActivity implements View.OnClickListener
         Intent intent = getIntent();
         place = intent.getParcelableExtra("place");
         account = intent.getParcelableExtra("account");
+
+        // load additional images into image list
+        images = new ArrayList<>();
+
+        ImageAdapter adapter = new ImageAdapter(this, images);
+        gvImages.setAdapter(adapter);
     }
 
     @Override
@@ -94,13 +113,34 @@ public class ShowPlace extends AppCompatActivity implements View.OnClickListener
 
         StorageReference image = storageRef.child("images/" + place.getThumb());
 
-        // load image from FireBase using Glide
+        // load header image from FireBase using Glide
         Glide.with(ShowPlace.this)
                 .using(new FirebaseImageLoader())
                 .load(image)
                 .centerCrop()
                 .fitCenter()
                 .into(ivPlaceImage);
+
+        // get reference to the current place
+        DatabaseReference databasePlace = databasePlaces.child(place.getPlaceId()).child("images");
+        // select all images saved for the current place
+        databasePlace.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                images.clear();
+                for(DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
+                    Image image = placeSnapshot.getValue(Image.class);
+                    images.add(image);
+                }
+
+                ImageAdapter adapter = new ImageAdapter(getApplicationContext(), images);
+                gvImages.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     private void takePhoto() {
@@ -143,7 +183,8 @@ public class ShowPlace extends AppCompatActivity implements View.OnClickListener
                 bitmapUri = null;
                 break;
             case R.id.btnSubmit:
-                Utility.commitPhotoToStorage(storageRef, photoPath, bitmapUri, getApplicationContext());
+                Utility.commitPhotoToStorage(storageRef, databasePlaces, account.getDisplayName(),
+                        place, photoPath, bitmapUri, getApplicationContext());
                 break;
         }
     }

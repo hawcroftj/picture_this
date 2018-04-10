@@ -13,16 +13,20 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 public final class Utility {
     private Utility() { }
@@ -73,18 +77,25 @@ public final class Utility {
         return photoPath.substring(photoPath.indexOf(imageFileName), photoPath.length());
     }
 
-    public static void commitPhotoToStorage(StorageReference storageReference, String photoPath, Uri bitmap, final Context context) {
+    public static void commitPhotoToStorage(StorageReference storageReference, final DatabaseReference databasePlace,
+                                            String accountName, Place place, String photoPath, Uri bitmap, final Context context) {
+        String fileName;
         Uri file;
         StorageReference ref;
 
         if(bitmap == null) { // if a photo was taken with camera and saved to the gallery
             file = Uri.fromFile(new File(photoPath));         // get photo from its location
-            ref = storageReference.child("images/" + file.getLastPathSegment());
+            fileName = file.getLastPathSegment();
+            ref = storageReference.child("images/" + fileName);
         } else {            // if a photo was chosen from a storage location
             file = bitmap;                                    // ignore temp file path, use image from device storage
             Uri filePath = Uri.fromFile(new File(photoPath)); // get file name, ignore file at this location
-            ref = storageReference.child("images/" + filePath.getLastPathSegment());
+            fileName = filePath.getLastPathSegment();
+            ref = storageReference.child("images/" + fileName);
         }
+
+        // add a reference to this image in the Place database entry
+        commitPhotoRefToDatabase(databasePlace, place, accountName, fileName);
 
         ref.putFile(file).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -104,7 +115,21 @@ public final class Utility {
         });
     }
 
-    public static void commitPhotoToStorage(StorageReference storageReference, String photoPath, final Context context) {
-        commitPhotoToStorage(storageReference, photoPath, null, context);
+    public static void commitPhotoToStorage(StorageReference storageReference, String accountName,
+                                            String photoPath, final Context context) {
+        commitPhotoToStorage(storageReference, null, accountName, null, photoPath, null, context);
+    }
+
+    public static void commitPhotoRefToDatabase(DatabaseReference databasePlace, Place place, String accountName, String fileName) {
+        if(databasePlace != null && place != null) {
+            // create unique primary key
+            final String NEW_IMAGE_ID = databasePlace.child(place.getPlaceId()).child("images").push().getKey();
+
+            Image image = new Image(NEW_IMAGE_ID, fileName, accountName);
+
+            // add new image to place in database
+            DatabaseReference imageRef = databasePlace.child(place.getPlaceId()).child("images").child(NEW_IMAGE_ID);
+            imageRef.setValue(image);
+        }
     }
 }

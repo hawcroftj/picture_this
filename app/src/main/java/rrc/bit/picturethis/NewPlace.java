@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
@@ -145,10 +146,10 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
 
     private void addPlace() {
         // upload place photo first
-        Utility.commitPhotoToStorage(storageReference, photoPath, getApplicationContext());
+        Utility.commitPhotoToStorage(storageReference, account.getDisplayName(), photoPath, getApplicationContext());
 
         //region Firebase json Structure - Visual Representation
-//        FIREBASE STRUCTURE
+//        IDEAL FIREBASE STRUCTURE
 //        ====================================
 //        places:{
 //            place1:{
@@ -201,8 +202,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
 
         // add new place to database
         databasePlaces.child(NEW_PLACE_ID).setValue(newPlace);
-        DatabaseReference imageRef = databasePlaces.child(NEW_PLACE_ID).child("images").push();
-        imageRef.setValue(newPlacePhotoName);
+        Utility.commitPhotoRefToDatabase(databasePlaces, newPlace, account.getDisplayName(), newPlacePhotoName);
 
         Toast.makeText(this, "Place created.", Toast.LENGTH_SHORT).show();
     }
