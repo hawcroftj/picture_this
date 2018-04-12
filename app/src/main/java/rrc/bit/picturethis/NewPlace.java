@@ -92,6 +92,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
                 break;
             case R.id.btnFindPlace:
                 Intent intent = new Intent(this, Map.class);
+                intent.putExtra("add_markers", "false");
                 startActivityForResult(intent, REQUEST_FIND_PLACE);
                 break;
             case R.id.btnSubmit:

@@ -75,7 +75,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener{
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.btnMap:
-                startActivity(new Intent(this, Map.class));
+                Intent intent = new Intent(this, Map.class);
+                intent.putExtra("add_markers", "true");
+                startActivity(intent);
                 break;
             case R.id.btnListPlace:
                 Intent iListPlace = new Intent(this, ListPlace.class);
