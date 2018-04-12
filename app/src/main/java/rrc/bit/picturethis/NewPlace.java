@@ -36,7 +36,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
     private SharedPreferences prefs;
     private GoogleSignInAccount account;
 
-    private TextView tvPlaceInfo;
+    private TextView tvPlaceInfo, tvPlaceLatLng;
     private EditText etTitle, etDescription;
     private ImageView ivPreview;
 
@@ -67,6 +67,7 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
         storageReference = firebaseStorage.getReference();
 
         tvPlaceInfo = findViewById(R.id.tvPlaceInfo);
+        tvPlaceLatLng = findViewById(R.id.tvPlaceLatLng);
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         ivPreview = findViewById(R.id.ivPreview);
@@ -119,9 +120,12 @@ public class NewPlace extends AppCompatActivity implements View.OnClickListener{
     private void displayPlaceInfo() {
         if(newPlaceInfo != null) {
             // [FeatureName, Thoroughfare, Locality, AdminArea, CountryCode, Lat, Long]
-            tvPlaceInfo.setText(String.format("%s %s %s %s %s", newPlaceInfo.get(0),
+            tvPlaceInfo.setText(String.format("%s %s, %s, %s %s.", newPlaceInfo.get(0),
                     newPlaceInfo.get(1), newPlaceInfo.get(2),
                     newPlaceInfo.get(3), newPlaceInfo.get(4)));
+
+            tvPlaceLatLng.setText(String.format("Lat: %s, Long: %s",
+                    newPlaceInfo.get(5), newPlaceInfo.get(6)));
         }
     }
 
