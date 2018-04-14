@@ -4,47 +4,65 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="5dp"
-    android:padding="5dp">
+    android:background="@color/colorAccentLight">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/ivImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="5dp"
             android:adjustViewBounds="true"
             android:cropToPadding="false"
             android:scaleType="fitXY"
             android:layout_gravity="center_horizontal"/>
 
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
+            android:shadowColor="#000000"
+            android:shadowRadius="2"
+            android:shadowDy="2"
+            android:shadowDx="2"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:text="Title Test"/>
+
+    </RelativeLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvDescription"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="Content Test. This is a test of the description text view."/>
 
             <TextView
                 android:id="@+id/tvUser"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textStyle="italic"
+                android:textColor="@color/colorPrimary"
+                android:text="Submitted by: Jadon H"/>
 
         </LinearLayout>
 
-    </LinearLayout>
+
 
 </LinearLayout>

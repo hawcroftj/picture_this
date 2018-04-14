@@ -5,7 +5,10 @@
     <string name="sign_in">Please sign in to continue.</string>
     <string name="welcome">Welcome</string>
 
+    <string name="place">Place</string>
+    <string name="list_place">All Places</string>
     <string name="new_place">Submit a New Place</string>
+    <string name="settings">Settings</string>
     <string name="from_map">Find on Map</string>
     <string name="take_photo">Take Photo</string>
     <string name="cancel">Cancel</string>

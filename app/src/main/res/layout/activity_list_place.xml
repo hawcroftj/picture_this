@@ -4,11 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="8dp"
+    android:background="@color/colorPrimary"
     tools:context="rrc.bit.picturethis.ListPlace">
 
     <ListView
         android:id="@+id/lvPlaces"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="7dp"
+        android:background="@color/colorPrimary"/>
 
 </android.support.constraint.ConstraintLayout>
