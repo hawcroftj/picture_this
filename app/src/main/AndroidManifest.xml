@@ -65,6 +65,7 @@
             android:parentActivityName=".ListPlace" />
         <activity
             android:name=".NewPlace"
+            android:label="@string/new_place"
             android:parentActivityName=".Main" />
         <activity
             android:name=".ListPlace"
