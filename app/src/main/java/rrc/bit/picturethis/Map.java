@@ -115,7 +115,7 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
                         Toast.makeText(Map.this, "No data for selected location.", Toast.LENGTH_SHORT).show();
                     }
 
-                    if (place != null) {
+                    if (place != null) { // return the Place
                         ArrayList<String> placeInfo = getAddressDetails(place);
                         Intent returnPlace = new Intent();
                         returnPlace.putStringArrayListExtra("place", placeInfo);

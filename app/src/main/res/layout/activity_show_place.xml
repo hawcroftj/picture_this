@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccentLight"
     android:orientation="vertical">
 
     <LinearLayout
@@ -82,28 +83,42 @@
                 android:text="Month 01, YYYY" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btnUploadPhoto"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload Photo"/>
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnTakePhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Take Photo"/>
+            <ImageView
+                android:id="@+id/ivNewImage"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:background="@color/colorPrimaryLight"/>
 
-        <ImageView
-            android:id="@+id/ivNewImage"
-            android:layout_width="200dp"
-            android:layout_height="200dp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnSubmit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Submit New Photo"/>
+                <Button
+                    android:id="@+id/btnUploadPhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload Photo"/>
+
+                <Button
+                    android:id="@+id/btnTakePhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Take Photo"/>
+
+                <Button
+                    android:id="@+id/btnSubmit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Submit New Photo"/>
+            </LinearLayout>
+
+        </LinearLayout>
 
         <GridView
             android:id="@+id/gvImages"
